@@ -1,0 +1,99 @@
+﻿<Window x:Class="Test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Test" xmlns:zz="clr-namespace:DataLibrary;assembly=DataLibrary"
+        mc:Ignorable="d"
+        xmlns:local_x="clr-namespace:Test"
+        Title="MainWindow" Height="450" Width="800" Closing="Window_Closing" Closed="Window_Closed">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open"
+                        Executed="OpenCommandHandler" />
+        <CommandBinding Command="ApplicationCommands.Save"
+                        CanExecute="CanSaveCommandHandler"
+                        Executed="SaveCommandHandler" />
+        <CommandBinding Command="ApplicationCommands.Delete"
+                        CanExecute="CanDeleteCommandHandler"
+                        Executed="DeleteCommandHandler" />
+        <CommandBinding Command="{x:Static local_x:MainWindow.AddCustom}"
+                        Executed="AddCustomCommandHandler"
+                        CanExecute="CanAddCustomCommandHandler" />
+    </Window.CommandBindings>
+    <Window.Resources>
+
+        <zz:V1MainCollection  x:Key="key_data"/>
+        <CollectionViewSource Source="{Binding Path=all_elements}" x:Key="key_view_V1DataCollection" Filter="FilterByDataCollection"/>
+        <CollectionViewSource Source="{Binding Path=all_elements}" x:Key="key_view_V1DataOnGrid" Filter="FilterByDataOnGrid"/>
+        <local:FirstElement_Converter x:Key="FirstElement_Converter"/>
+        <local:DataCollection_coordinates_Converter x:Key="DataCollection_coordinates_Converter"/>
+        <DataTemplate  x:Key="key_details_DataTemplate" >
+            <StackPanel Orientation="Vertical" >
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="time:"/>
+                    <TextBlock Text="{Binding Path=t}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding   Converter={StaticResource DataCollection_coordinates_Converter}}"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid x:Name="grid_collection">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="113*"/>
+            <RowDefinition Height="104*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox Name="ListBox_Main" ItemsSource="{Binding Path=all_elements}" Margin="10,30,10,10"/>
+        <Menu Margin="0,0,10,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Height="25">
+            <MenuItem Header="File">
+                <MenuItem Header="New" Click="menu_New" />
+                <MenuItem Header="Open" Click="menu_Open"/>
+                <MenuItem Header="Save" Click="menu_Save"/>
+            </MenuItem>
+            <MenuItem Header="Edit">
+                <MenuItem Header="Add Defaults" Click="menu_Add_Defaults" />
+                <MenuItem Header="Add Default V1DataCollection" Click="menu_Add_Default_V1DataCollection" />
+                <MenuItem Header="Add Default V1DataOnGrid" Click="menu_Add_Default_V1DataOnGrid"/>
+                <MenuItem Header="Add Element from File" Click="menu_Add_Element_from_File" />
+                <MenuItem Header="Remove" Click="menu_Remove"/>
+            </MenuItem>
+            <MenuItem Header="Add Custom V1DataOnGrid" Command="{x:Static local_x:MainWindow.AddCustom}"/>
+        </Menu>
+        <ListBox Grid.Column="1" Margin="10,30,10,10" Name="ListBox_DataCollection" ItemsSource ="{Binding Source={StaticResource key_view_V1DataCollection}}"/>
+        <ListBox Grid.Column="2" Margin="10,30,10,10" Name="ListBox_DataOnGrid" ItemsSource="{Binding Source={StaticResource key_view_V1DataOnGrid}}"/>
+        <TextBlock HorizontalAlignment="Left" Margin="90,10,0,0" Name="textBlock_MaxCount" Text="{Binding Path=max_count}" TextWrapping="Wrap" VerticalAlignment="Top" Width="37" RenderTransformOrigin="0.541,0.566" Grid.Row="1"/>
+        <ListBox Grid.Column="1" Grid.Row="1" Margin="10,10,10,10" Name="ListBox_details" ItemsSource="{Binding ElementName=ListBox_DataCollection, Path=SelectedItem.value}" ItemTemplate="{StaticResource key_details_DataTemplate}" IsSynchronizedWithCurrentItem="True"/>
+        <Grid Name="Grid_DataOnGrid" Margin="10,0,10,10" Grid.Column="2" Grid.Row="1">
+            <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="10,31,0,0" Grid.Row="1" Name="TextBlock_FirstElement"  Text="{Binding ElementName=ListBox_DataOnGrid, Path=SelectedItem.points_value[0]}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="10,73,0,0" Grid.Row="1" Name="TextBlock_LastElement"  Text="{Binding ElementName=ListBox_DataOnGrid,Path=SelectedItem.points_value, Converter={StaticResource FirstElement_Converter}}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" Text="First element V1DataOnGrid" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="10,52,0,0" Grid.Row="1" Text="Last element V1DataOnGrid" TextWrapping="Wrap" VerticalAlignment="Top"/>
+
+        </Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" Text="Max Count:" TextWrapping="Wrap" VerticalAlignment="Top" Width="75" Grid.Row="1"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Margin="0,30,0,0" Text="Add Custom V1DataOnGrid" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Background="#FFDD7B7B"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Margin="0,51,0,0" Text="String базового класса V1Data:" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Margin="0,90,0,0" Text="Число узлов сетки по времени:" TextWrapping="Wrap" VerticalAlignment="Top" Width="180" Height="16"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Margin="0,129,0,0" Text="minValue:" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        <TextBlock Grid.Column="3" HorizontalAlignment="Center" Margin="0,168,0,0" Text="maxValue;:" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        
+      
+        <TextBox Grid.Column="3" HorizontalAlignment="Center" Margin="0,67,0,0" Name="TextBox_V1DataString"  Text="{Binding Path=data, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        <TextBox Grid.Column="3" HorizontalAlignment="Center" Margin="0,106,0,0" Name="TextBox_GridNumber" Text="{Binding Path=number_of_grid_points, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        <TextBox Grid.Column="3" HorizontalAlignment="Center" Margin="0,145,0,0" Name="TextBox_minValue" Text="{Binding Path=minValue, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        <TextBox Grid.Column="3" HorizontalAlignment="Center" Margin="0,184,0,0" Name="TextBox_maxValue" Text="{Binding Path=maxValue, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        
+        
+        <Button Content="Open" Grid.Column="3" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" Command="ApplicationCommands.Open" CommandParameter="From Button" Width="50"/>
+        <Button Content="Save" Grid.Column="3" HorizontalAlignment="Left" Margin="66,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="58" Command="ApplicationCommands.Save" CommandParameter="From Button"/>
+        <Button Content="Add Custom" Grid.Column="3" HorizontalAlignment="Left" Margin="10,36,0,0" Grid.Row="1" VerticalAlignment="Top" Width="165" Command="{x:Static local_x:MainWindow.AddCustom}"/>
+        <Button Content="Remove" Grid.Column="3" HorizontalAlignment="Left" Margin="129,10,0,0" Grid.Row="1" VerticalAlignment="Top" Command="ApplicationCommands.Delete" CommandParameter="From Button"/>
+    </Grid>
+</Window>
