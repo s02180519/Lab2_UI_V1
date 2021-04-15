@@ -7,7 +7,7 @@ namespace DataLibrary
 {
     public partial class PropertiesToUse : IDataErrorInfo, System.ComponentModel.INotifyPropertyChanged
     {
-        public int min=4, max=5;
+        public double min=4.0, max=5.0;
         public V1MainCollection element_collection;
         public string string_data = "";
         public string data
@@ -18,17 +18,17 @@ namespace DataLibrary
             }
         }
         public int number_of_grid_points { get; set; }
-        public int minValue { get { return min; } set {
+        public double minValue { get { return min; } set {
                 min = value;
                 NotifyPropertyChanged("maxValue"); } }
-        public int maxValue { get { return max; } set
+        public double maxValue { get { return max; } set
             {
                 max = value;
                 NotifyPropertyChanged("minValue");
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;
-        public PropertiesToUse(ref V1MainCollection collection, string new_data = "UI8", int new_number_of_grid_points = 2, int new_minValue = 4, int new_maxValue = 5)
+        public PropertiesToUse(ref V1MainCollection collection, string new_data = "UI8", int new_number_of_grid_points = 2, double new_minValue = 4.0, double new_maxValue = 5.0)
         {
             element_collection = collection;
             data = new_data;
@@ -93,7 +93,7 @@ namespace DataLibrary
         {
             Grid new_grid = new DataLibrary.Grid(0, 1, element.number_of_grid_points);
             V1DataOnGrid value1 = new V1DataOnGrid(element.data, DateTime.Now , new_grid);
-            value1.InitRandom(element.min, element.max);
+            value1.InitRandom((float)element.min, (float)element.max);
             element.element_collection.Add(value1);
         }
         
